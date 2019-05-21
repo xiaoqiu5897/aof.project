@@ -19,6 +19,7 @@ Route::group(['middleware' => 'auth'], function () {
 	//phiếu thu
 	Route::get('get-list-cash-receipt-voucher', 'CashReceiptVoucherController@getList')->name('get-list-cash-receipt-voucher');
 	Route::get('get-group-object', 'CashReceiptVoucherController@getGroupObject');
+	Route::put('calendar/{id}', 'CashReceiptVoucherController@calendar');
 	Route::resource('cash-receipt-voucher', 'CashReceiptVoucherController');
 	//hết
 	//phiếu chi
