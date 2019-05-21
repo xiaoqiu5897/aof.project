@@ -21,6 +21,17 @@ class CashReceiptVoucherController extends Controller
         return view('cash-receipt-voucher.index');
     }
 
+    public function calendar($id){
+        $data['status'] = 1;
+        //dd($data);
+        Voucher::where('id', $id)->update($data);
+
+        return response()->json([
+            'error' => false,
+            'status'    =>  'success',
+            'message' => 'Ghi sổ thành công!'
+        ], 200);
+    }
 
     public function getList()
     {
@@ -30,13 +41,15 @@ class CashReceiptVoucherController extends Controller
                 ->addColumn('action', function ($receipt_voucher) {
                     $txt = '';
 
-                    $txt .= '<a class="btn btn-xs btn-show-obj" data-tooltip="tooltip" title="Xem chi tiết" data-show-path="" style="background: #dc58eb; color: white"> <i class="fa fa-eye" aria-hidden="true"></i></a>';
+                    $txt .= '<a class="btn btn-xs btn-detail" data-tooltip="tooltip" title="Xem chi tiết" data-show-path="" style="background: #dc58eb; color: white"> <i class="fa fa-eye" aria-hidden="true"></i></a>';
 
-                    $txt .= '<a class="btn btn-xs btn-show-obj" data-tooltip="tooltip" title="In phiếu" data-show-path="" style="background: #34e1da; color: white"> <i class="fa fa-print" aria-hidden="true"></i></a>';
+                    $txt .= '<a class="btn btn-xs btn-print" data-tooltip="tooltip" title="In phiếu" data-show-path="" style="background: #34e1da; color: white"> <i class="fa fa-print" aria-hidden="true"></i></a>';
 
-                    $txt .= '<a class="btn btn-xs btn-warning btn-edit-obj" data-tooltip="tooltip" title="Chỉnh sửa" data-edit-path=""> <i class="fa fa-edit" aria-hidden="true"></i></a>';
+                    $txt .= '<a class="btn btn-xs btn-edit btn-edit-obj" data-tooltip="tooltip" title="Chỉnh sửa" data-edit-path=""> <i class="fa fa-edit" aria-hidden="true"></i></a>';
 
-                    $txt .= '<a class="btn btn-xs btn-show-obj" data-tooltip="tooltip" title="Ghi sổ" data-show-path="" style="background: #71f847; color: white"> <i class="fa fa-book" aria-hidden="true"></i></a>';
+                    if ($receipt_voucher->status == 0) {
+                        $txt .= '<a class="btn btn-xs btn-calendar" data-tooltip="tooltip" title="Ghi sổ" data-show-path="" onclick="calendar('.$receipt_voucher->id.')" style="background: #71f847; color: white"> <i class="fa fa-book" aria-hidden="true"></i></a>';
+                    }
                     
                     $txt .= '<a class="btn btn-xs btn-danger btn-delete-obj" data-tooltip="tooltip" data-delete-id="" title="Xóa"> <i class="fa fa-trash" aria-hidden="true"></i></a>';
 
@@ -87,10 +100,15 @@ class CashReceiptVoucherController extends Controller
         $money = Money::select('id', 'name')->get();
         //tự động tạo mã phiếu thu mới nhất
         $lastest_code_voucher = Voucher::select('code')->where('type', 1)->orderBy('id', 'desc')->first();
-        $test = explode("-", $lastest_code_voucher->code);
-        $l = max(strlen($test[1]), 1);
-        $c = str_pad($test[1] + 1, $l, "0", STR_PAD_LEFT);
-        $new_code_voucher = $test[0] . '-' . $c;
+        if ($lastest_code_voucher) {
+            $test = explode("-", $lastest_code_voucher->code);
+            $l = max(strlen($test[1]), 1);
+            $c = str_pad($test[1] + 1, $l, "0", STR_PAD_LEFT);
+            $new_code_voucher = $test[0] . '-' . $c;
+        } else {
+            $new_code_voucher = 'PT-001';
+        }
+        
         return view('cash-receipt-voucher.create', compact('money', 'new_code_voucher'));
     }
 

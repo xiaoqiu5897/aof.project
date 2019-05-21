@@ -2,6 +2,7 @@
 @section('head')
 <link rel="stylesheet" href="{{url('css/datatables.bootstrap.css')}}">
 <link rel="stylesheet" href="{{ asset('optimization/css/custom.css') }}">
+<link rel='stylesheet' href='https://cdn.rawgit.com/t4t5/sweetalert/v0.2.0/lib/sweet-alert.css'>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker.min.css">
 <style type="text/css">
     .modal-header{
@@ -131,7 +132,8 @@
 <script src="{{ asset('optimization/js/moment-with-locales.min.js') }}" charset="UTF-8"></script>
 <script src="{{ asset('assets/global/plugins/jquery-number-master/jquery.number.min.js') }}" charset="UTF-8"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/js/bootstrap-datepicker.js"></script>
-<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script src='https://cdn.rawgit.com/t4t5/sweetalert/v0.2.0/lib/sweet-alert.min.js'></script>
+{{-- <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script> --}}
 <script type="text/javascript">
     $("body").tooltip({ selector: '[data-tooltip=tooltip]' });
 </script>
@@ -158,6 +160,31 @@
 
         ]
     });
+</script>
+<script type="text/javascript">
+    function calendar(id){
+        swal({
+            title: "Bạn chắc chắn muốn ghi sổ chứng từ này?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            cancelButtonText: "Không",
+            confirmButtonText: "Có",
+        },
+        function() {
+            $.ajax({
+                url: '{{ url('/calendar') }}/'+id,
+                type: 'put',
+                success: function(res){
+                    toastr[''+res.status](res.message);
+                    $('#receipt_voucher_table').DataTable().ajax.reload();
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    toastr.error(thrownError);
+                }
+            });
+        });
+    }
 </script>
 <script>
     $(document).ready(function () {
@@ -205,8 +232,6 @@
             }
         })
     })
-
-    
 </script>
 <script>
     $(document).on('click', '#add_btn_receipt', function (event) {
