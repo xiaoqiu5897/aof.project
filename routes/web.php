@@ -25,4 +25,10 @@ Route::group(['middleware' => 'auth'], function () {
 	//phiếu chi
 	Route::resource('cash-payment-voucher', 'CashPaymentVoucherController');
 	//hết
+	//quản lý tài chính
+	Route::resource('finance_account', 'FinanceAccountController');
+	Route::get('get-list-finance-account', 'FinanceAccountController@getList')->name('get-list-finance-account');
+	Route::get('find-finance-account/{id}', 'FinanceAccountController@find')->name('find-finance-account');
+	Route::get('create-finance-account', 'FinanceAccountController@create')->name('create-finance-account');
+	//hết
 });
